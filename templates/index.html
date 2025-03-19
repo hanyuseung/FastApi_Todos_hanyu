@@ -1,10 +1,18 @@
+<!-- version 1.0.1 -->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>To-Do List</title>
+    <style>
+        .completed {
+            text-decoration: line-through;
+        }
+    </style>
 </head>
+
 <body>
     <h1>To-Do List</h1>
     <ul id="todo-list"></ul>
@@ -20,8 +28,42 @@
             const todoList = document.getElementById('todo-list');
             todoList.innerHTML = '';
             todos.forEach(todo => {
+
+                //checkbox
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.checked = todo.completed;
+                checkbox.style.marginRight = '10px';
+
+                //li element
                 const li = document.createElement('li');
-                li.textContent = `${todo.title}: ${todo.description}`;
+                //li.style.marginRight = '10px';
+
+                //text element generate
+                const span = document.createElement('span');
+                span.textContent = `${todo.title}: ${todo.description}`;
+                if (todo.completed) {
+                    span.classList.add('completed');
+                }
+
+                //check box clicked -> strikeThrough toggle
+                checkbox.addEventListener('change', async () => {
+                    if (checkbox.checked) {
+                        span.classList.add('completed');
+                    } else {
+                        span.classList.remove('completed');
+                    }
+                    await fetch(`/todos/${todo.id}/completed`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ completed: checkbox.checked })
+                    });
+                });
+
+                li.appendChild(checkbox);
+                li.appendChild(span);
                 todoList.appendChild(li);
             });
         }
@@ -30,12 +72,18 @@
             event.preventDefault();
             const title = document.getElementById('title').value;
             const description = document.getElementById('description').value;
+            const newTodo = {
+                id: Date.now(),
+                title,
+                description,
+                completed: false
+            }
             const response = await fetch('/todos', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ id: Date.now(), title, description, completed: false })
+                body: JSON.stringify(newTodo)
             });
             if (response.ok) {
                 fetchTodos();
@@ -45,4 +93,5 @@
         fetchTodos();
     </script>
 </body>
+
 </html>
