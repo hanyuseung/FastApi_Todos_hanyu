@@ -1,4 +1,4 @@
-#version 1.0.1
+#version 1.0.1 - 1.0.2
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel

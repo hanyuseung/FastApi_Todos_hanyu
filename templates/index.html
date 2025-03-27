@@ -1,97 +1,165 @@
-<!-- version 1.0.1 -->
+<!-- version 1.0.2 -->
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>To-Do List</title>
-    <style>
-        .completed {
-            text-decoration: line-through;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>To-Do List</title>
+  <style>
+    .completed {
+      text-decoration: line-through;
+    }
+    /* 기본 스타일 */
+    body {
+      background-color: #fff;
+      color: #000;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    /* 다크 모드 스타일 */
+    body.dark-mode {
+      background-color: #333;
+      color: #f0f0f0;
+    }
+    body.dark-mode input,
+    body.dark-mode button {
+      background-color: #555;
+      color: #f0f0f0;
+      border: none;
+    }
+  </style>
 </head>
-
 <body>
-    <h1>To-Do List</h1>
-    <ul id="todo-list"></ul>
-    <form id="todo-form">
-        <input type="text" id="title" placeholder="Title" required>
-        <input type="text" id="description" placeholder="Description" required>
-        <button type="submit">Add To-Do</button>
-    </form>
-    <script>
-        async function fetchTodos() {
-            const response = await fetch('/todos');
-            const todos = await response.json();
-            const todoList = document.getElementById('todo-list');
-            todoList.innerHTML = '';
-            todos.forEach(todo => {
+  <h1>To-Do List</h1>
+  <!-- 다크 모드 토글 버튼 -->
+  <button id="toggle-dark-mode">Toggle Dark Mode</button>
+  <ul id="todo-list"></ul>
+  <form id="todo-form">
+    <input type="text" id="title" placeholder="Title" required />
+    <input type="text" id="description" placeholder="Description" required />
+    <button type="submit">Add To-Do</button>
+  </form>
+  <script>
+    async function fetchTodos() {
+      const response = await fetch("/todos");
+      const todos = await response.json();
+      const todoList = document.getElementById("todo-list");
+      todoList.innerHTML = "";
+      todos.forEach(todo => {
+        // checkbox 생성
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.checked = todo.completed;
+        checkbox.style.marginRight = "10px";
 
-                //checkbox
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.checked = todo.completed;
-                checkbox.style.marginRight = '10px';
+        // li 요소 생성
+        const li = document.createElement("li");
 
-                //li element
-                const li = document.createElement('li');
-                //li.style.marginRight = '10px';
-
-                //text element generate
-                const span = document.createElement('span');
-                span.textContent = `${todo.title}: ${todo.description}`;
-                if (todo.completed) {
-                    span.classList.add('completed');
-                }
-
-                //check box clicked -> strikeThrough toggle
-                checkbox.addEventListener('change', async () => {
-                    if (checkbox.checked) {
-                        span.classList.add('completed');
-                    } else {
-                        span.classList.remove('completed');
-                    }
-                    await fetch(`/todos/${todo.id}/completed`, {
-                        method: 'PATCH',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ completed: checkbox.checked })
-                    });
-                });
-
-                li.appendChild(checkbox);
-                li.appendChild(span);
-                todoList.appendChild(li);
-            });
+        // 텍스트 생성
+        const span = document.createElement("span");
+        span.textContent = `${todo.title}: ${todo.description}`;
+        if (todo.completed) {
+          span.classList.add("completed");
         }
 
-        document.getElementById('todo-form').addEventListener('submit', async (event) => {
-            event.preventDefault();
-            const title = document.getElementById('title').value;
-            const description = document.getElementById('description').value;
-            const newTodo = {
-                id: Date.now(),
-                title,
-                description,
-                completed: false
-            }
-            const response = await fetch('/todos', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(newTodo)
-            });
-            if (response.ok) {
-                fetchTodos();
-            }
+        // 체크박스 상태 변경 시 완료 상태 업데이트
+        checkbox.addEventListener("change", async () => {
+          if (checkbox.checked) {
+            span.classList.add("completed");
+          } else {
+            span.classList.remove("completed");
+          }
+          await fetch(`/todos/${todo.id}/completed`, {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ completed: checkbox.checked })
+          });
         });
 
-        fetchTodos();
-    </script>
-</body>
+        li.appendChild(checkbox);
+        li.appendChild(span);
 
+        // 수정(Edit) 버튼 생성
+        const editButton = document.createElement("button");
+        editButton.textContent = "Edit";
+        editButton.style.marginLeft = "10px";
+        editButton.addEventListener("click", async () => {
+          const newTitle = prompt("Enter new title", todo.title);
+          const newDescription = prompt("Enter new description", todo.description);
+          if (newTitle !== null && newDescription !== null) {
+            const updatedTodo = {
+              id: todo.id,
+              title: newTitle,
+              description: newDescription,
+              completed: todo.completed
+            };
+            const response = await fetch(`/todos/${todo.id}`, {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify(updatedTodo)
+            });
+            if (response.ok) {
+              fetchTodos();
+            } else {
+              alert("Failed to update the to-do item");
+            }
+          }
+        });
+        li.appendChild(editButton);
+
+        // 삭제(Delete) 버튼 생성
+        const deleteButton = document.createElement("button");
+        deleteButton.textContent = "Delete";
+        deleteButton.style.marginLeft = "10px";
+        deleteButton.addEventListener("click", async () => {
+          if (confirm("Are you sure you want to delete this to-do item?")) {
+            const response = await fetch(`/todos/${todo.id}`, {
+              method: "DELETE"
+            });
+            if (response.ok) {
+              fetchTodos();
+            } else {
+              alert("Failed to delete the to-do item");
+            }
+          }
+        });
+        li.appendChild(deleteButton);
+
+        todoList.appendChild(li);
+      });
+    }
+
+    document.getElementById("todo-form").addEventListener("submit", async event => {
+      event.preventDefault();
+      const title = document.getElementById("title").value;
+      const description = document.getElementById("description").value;
+      const newTodo = {
+        id: Date.now(),
+        title,
+        description,
+        completed: false
+      };
+      const response = await fetch("/todos", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(newTodo)
+      });
+      if (response.ok) {
+        fetchTodos();
+      }
+    });
+
+    // 다크 모드 토글 기능 구현
+    document.getElementById("toggle-dark-mode").addEventListener("click", () => {
+      document.body.classList.toggle("dark-mode");
+    });
+
+    fetchTodos();
+  </script>
+</body>
 </html>
