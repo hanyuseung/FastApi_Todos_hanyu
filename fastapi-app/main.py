@@ -1,4 +1,4 @@
-#version 1.0.1 - 1.0.2
+# Version 3.0.0
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
@@ -7,14 +7,15 @@ import os
 
 app = FastAPI()
 
-# To-Do 항목 모델
+# To-Do 항목 모델에 priority 필드 추가
 class TodoItem(BaseModel):
     id: int
     title: str
     description: str
     completed: bool
+    priority: int  # 추가된 필드
 
-#completed 상태 업데이트를 위한 모델
+# completed 상태 업데이트를 위한 모델
 class TodoStatusUpdate(BaseModel):
     completed: bool
 
@@ -32,7 +33,6 @@ def load_todos():
             return []
     else:
         return []
-
 
 # JSON 파일에 To-Do 항목 저장
 def save_todos(todos):
@@ -56,9 +56,9 @@ def create_todo(todo: TodoItem):
 @app.put("/todos/{todo_id}", response_model=TodoItem)
 def update_todo(todo_id: int, updated_todo: TodoItem):
     todos = load_todos()
-    for todo in todos:
+    for index, todo in enumerate(todos):
         if todo["id"] == todo_id:
-            todo.update(updated_todo.dict())
+            todos[index] = updated_todo.dict()
             save_todos(todos)
             return updated_todo
     raise HTTPException(status_code=404, detail="To-Do item not found")

@@ -1,4 +1,4 @@
-<!-- version 1.0.2 -->
+<!-- version 3.0.0 - 우선순위 추가 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -36,12 +36,22 @@
   <form id="todo-form">
     <input type="text" id="title" placeholder="Title" required />
     <input type="text" id="description" placeholder="Description" required />
+    <!-- 우선순위 입력란 추가 -->
+    <input type="number" id="priority" placeholder="Priority (숫자)" required />
     <button type="submit">Add To-Do</button>
   </form>
   <script>
     async function fetchTodos() {
       const response = await fetch("/todos");
-      const todos = await response.json();
+      let todos = await response.json();
+      // 우선순위가 없는 항목은 기본값 0으로 설정하고, 우선순위 기준으로 오름차순 정렬
+      todos.forEach(todo => {
+        if (todo.priority === undefined) {
+          todo.priority = 0;
+        }
+      });
+      todos.sort((a, b) => a.priority - b.priority);
+      
       const todoList = document.getElementById("todo-list");
       todoList.innerHTML = "";
       todos.forEach(todo => {
@@ -54,9 +64,9 @@
         // li 요소 생성
         const li = document.createElement("li");
 
-        // 텍스트 생성
+        // 텍스트 생성 (우선순위 표시 포함)
         const span = document.createElement("span");
-        span.textContent = `${todo.title}: ${todo.description}`;
+        span.textContent = `[Priority: ${todo.priority}] ${todo.title}: ${todo.description}`;
         if (todo.completed) {
           span.classList.add("completed");
         }
@@ -87,12 +97,14 @@
         editButton.addEventListener("click", async () => {
           const newTitle = prompt("Enter new title", todo.title);
           const newDescription = prompt("Enter new description", todo.description);
-          if (newTitle !== null && newDescription !== null) {
+          const newPriority = prompt("Enter new priority (숫자)", todo.priority);
+          if (newTitle !== null && newDescription !== null && newPriority !== null) {
             const updatedTodo = {
               id: todo.id,
               title: newTitle,
               description: newDescription,
-              completed: todo.completed
+              completed: todo.completed,
+              priority: parseInt(newPriority)
             };
             const response = await fetch(`/todos/${todo.id}`, {
               method: "PUT",
@@ -136,11 +148,13 @@
       event.preventDefault();
       const title = document.getElementById("title").value;
       const description = document.getElementById("description").value;
+      const priority = parseInt(document.getElementById("priority").value);
       const newTodo = {
         id: Date.now(),
         title,
         description,
-        completed: false
+        completed: false,
+        priority: priority
       };
       const response = await fetch("/todos", {
         method: "POST",
