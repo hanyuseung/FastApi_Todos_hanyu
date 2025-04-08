@@ -1,11 +1,14 @@
-# Version 3.0.0
+# Version 4.0.0 staticFiles added
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
+from fastapi.staticfiles import StaticFiles
+
 import json
 import os
 
 app = FastAPI()
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # To-Do 항목 모델에 priority 필드 추가
 class TodoItem(BaseModel):

@@ -1,45 +1,30 @@
-<!-- version 3.0.0 - 우선순위 추가 -->
+<!-- version 4.0.0 UI 수정 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>To-Do List</title>
-  <style>
-    .completed {
-      text-decoration: line-through;
-    }
-    /* 기본 스타일 */
-    body {
-      background-color: #fff;
-      color: #000;
-      transition: background-color 0.3s, color 0.3s;
-    }
-    /* 다크 모드 스타일 */
-    body.dark-mode {
-      background-color: #333;
-      color: #f0f0f0;
-    }
-    body.dark-mode input,
-    body.dark-mode button {
-      background-color: #555;
-      color: #f0f0f0;
-      border: none;
-    }
-  </style>
+  <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-  <h1>To-Do List</h1>
-  <!-- 다크 모드 토글 버튼 -->
-  <button id="toggle-dark-mode">Toggle Dark Mode</button>
-  <ul id="todo-list"></ul>
-  <form id="todo-form">
-    <input type="text" id="title" placeholder="Title" required />
-    <input type="text" id="description" placeholder="Description" required />
-    <!-- 우선순위 입력란 추가 -->
-    <input type="number" id="priority" placeholder="Priority (숫자)" required />
-    <button type="submit">Add To-Do</button>
-  </form>
+
+  <div class = "container">
+    <h1>To-Do List</h1>
+    <!-- 다크 모드 토글 버튼 -->
+    <button id="toggle-dark-mode">Dark Mode</button>
+    <ul id="todo-list"></ul>
+    <form id="todo-form">
+      <input type="text" id="title" placeholder="Title" required />
+      <input type="text" id="description" placeholder="Description" required />
+      <!-- 우선순위 입력란 추가 -->
+      <input type="number" id="priority" placeholder="Priority (숫자)" required />
+      <button type="submit">Add To-Do</button>
+    </form>
+  </div>
+
+
+
   <script>
     async function fetchTodos() {
       const response = await fetch("/todos");
@@ -93,7 +78,6 @@
         // 수정(Edit) 버튼 생성
         const editButton = document.createElement("button");
         editButton.textContent = "Edit";
-        editButton.style.marginLeft = "10px";
         editButton.addEventListener("click", async () => {
           const newTitle = prompt("Enter new title", todo.title);
           const newDescription = prompt("Enter new description", todo.description);
@@ -125,7 +109,7 @@
         // 삭제(Delete) 버튼 생성
         const deleteButton = document.createElement("button");
         deleteButton.textContent = "Delete";
-        deleteButton.style.marginLeft = "10px";
+        
         deleteButton.addEventListener("click", async () => {
           if (confirm("Are you sure you want to delete this to-do item?")) {
             const response = await fetch(`/todos/${todo.id}`, {

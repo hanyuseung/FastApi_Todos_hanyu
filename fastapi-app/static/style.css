@@ -1,0 +1,146 @@
+/* CSS Version 1.0.0 */
+
+/* 기본 리셋 및 폰트 설정 */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #f9f9f9;
+  color: #333;
+  padding: 20px;
+}
+
+body.dark-mode.container {
+  background-color: #2c3e50;
+  color: #ecf0f1;
+}
+
+/* 컨테이너 중앙 정렬 */
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* 헤딩 스타일 */
+h1 {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+/* 다크 모드 토글 버튼 */
+#toggle-dark-mode {
+  display: block;
+  margin: 0 auto 20px;
+  padding: 10px 20px;
+  background-color: #555;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+#toggle-dark-mode:hover {
+  background-color: #333;
+}
+
+/* To-Do 폼 스타일링 */
+#todo-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+#todo-form input[type="text"],
+#todo-form input[type="number"] {
+  flex: 1 1 200px;
+  padding: 10px;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  transition: border-color 0.3s;
+}
+
+#todo-form input:focus {
+  border-color: #777;
+}
+
+#todo-form button {
+  padding: 10px 20px;
+  background-color: #333;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+#todo-form button:hover {
+  background-color: #555;
+}
+
+/* To-Do 리스트 스타일링 */
+#todo-list {
+  list-style: none;
+}
+
+#todo-list li {
+  background-color: #fff;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#todo-list li span {
+  flex: 1;
+  margin-left: 10px;
+}
+
+#todo-list li button {
+  margin-left: 10px;
+  padding: 5px 10px;
+  background-color: #e74c3c;
+  border: none;
+  border-radius: 4px;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+#todo-list li button:hover {
+  background-color: #c0392b;
+}
+
+#todo-list li span.complete {
+  text-decoration: line-through;
+}
+
+/* 완료된 항목 스타일 */
+.completed {
+  text-decoration: line-through;
+  color: #999;
+}
+
+/* 다크 모드 스타일 */
+body.dark-mode {
+  background-color: #2c3e50;
+  color: #ecf0f1;
+}
+
+body.dark-mode #todo-list li {
+  background-color: #34495e;
+}
+
+body.dark-mode input,
+body.dark-mode button {
+  background-color: #555;
+  border: 2px solid #777;
+  color: #ecf0f1;
+}
