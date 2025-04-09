@@ -1,14 +1,20 @@
 # Version 4.0.0 staticFiles added
+import os
 from fastapi import FastAPI, HTTPException
+from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
-from fastapi.staticfiles import StaticFiles
-
 import json
-import os
 
 app = FastAPI()
-app.mount("/static", StaticFiles(directory="static"), name="static")
+
+# 현재 main.py 파일의 절대 경로를 기준으로 static 폴더의 절대 경로를 구합니다.
+current_dir = os.path.dirname(os.path.abspath(__file__))
+static_path = os.path.join(current_dir, "static")
+
+app.mount("/static", StaticFiles(directory=static_path), name="static")
+
+
 
 # To-Do 항목 모델에 priority 필드 추가
 class TodoItem(BaseModel):
