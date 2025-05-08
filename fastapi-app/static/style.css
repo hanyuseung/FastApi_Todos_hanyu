@@ -1,5 +1,42 @@
 /* CSS Version 1.0.0 */
 
+
+/* list container */
+
+/* ─── 리스트 래퍼 ─── */
+.lists {
+  display: flex;           /* 가로 정렬 */
+  flex-wrap: nowrap;       /* 아이템이 줄바꿈 하지 않도록 */
+  width: 100%;             /* 부모(컨테이너)만큼 넓이 차지 */
+  gap: 20px;               /* 칸 사이 간격 (선택) */
+}
+
+/* ─── 각각 50%씩 차지 ─── */
+.today-container,
+.week-container {
+  flex: 1 1 0;             /* 동일 비율로 나눠 갖기 */
+  min-width: 0;            /* 넘칠 때 잘려 보이게 */
+  /* border-right: 1px solid #ccc;  필요하면 추가 */
+}
+
+/* Today 리스트 폰트 굵게 설정 */
+.today-container #today-list li span {
+  font-weight: bold;
+}
+
+
+/* ─── 컨테이너 최대 너비 조정 ─── */
+.container {
+  max-width: none;         /* 600px 제한 제거 */
+  width: 90vw;             /* 화면 너비의 90% 차지 (필요에 맞춰 변경) */
+  margin: 0 auto;
+}
+
+
+
+
+
+
 /* 기본 리셋 및 폰트 설정 */
 * {
   box-sizing: border-box;
@@ -144,3 +181,7 @@ body.dark-mode button {
   border: 2px solid #777;
   color: #ecf0f1;
 }
+
+
+
+
