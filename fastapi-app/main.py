@@ -1,3 +1,5 @@
+# main.py version 9.0.0
+
 import os, json
 from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
