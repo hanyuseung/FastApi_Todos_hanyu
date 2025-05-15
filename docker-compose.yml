@@ -49,7 +49,7 @@ services:
       image: google/cadvisor:latest
       container_name: cadvisor
       ports: 
-        -"7200:7300"
+        -"7200:8080"
     volumes:
         - /:/rootfs:ro
         - /var/run:/var/run:ro
