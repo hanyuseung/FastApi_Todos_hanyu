@@ -45,6 +45,16 @@ services:
       container_name: node-exporter
       ports:
         - "7100:9100"
+  cadvisor:
+      image: google/cadvisor:latest
+      container_name: cadvisor
+      ports: 
+        -"7200:7300"
+    volumes:
+        - /:/rootfs:ro
+        - /var/run:/var/run:ro
+        - /sys:/sys:ro
+        - /var/lib/docker/:/var/lib/docker:ro
 
 volumes:
   sonarqube_conf:
