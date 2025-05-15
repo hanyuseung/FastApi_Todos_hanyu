@@ -7,6 +7,7 @@
   flex-wrap: nowrap;       /* 아이템이 줄바꿈 하지 않도록 */
   width: 100%;             /* 부모(컨테이너)만큼 넓이 차지 */
   gap: 20px;               /* 칸 사이 간격 (선택) */
+
 }
 
 /* ─── 각각 50%씩 차지 ─── */
@@ -168,4 +169,17 @@ body.dark-mode button {
   background-color: #555;
   border: 2px solid #777;
   color: #ecf0f1;
+}
+
+
+/* 우선순위 번호를 배지처럼 꾸미기 */
+.priority-badge {
+  display: inline-block;
+  background: #f0f0f0;
+  color: #333;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-right: 0.5em;
+  font-size: 0.9em;
 }

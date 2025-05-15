@@ -3,6 +3,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script src = "https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>To-Do List</title>
@@ -87,9 +88,12 @@
           li.querySelector("span").classList.toggle("completed", cb.checked);
         });
 
-        // 텍스트 스팬
+        // priority 뱃지
         const span = document.createElement("span");
-        span.textContent = `[P:${task.priority}] ${task.title}: ${task.description}`;
+        //span.textContent = `[${task.priority}] ${task.title}: ${task.description}`;
+        span.innerHTML = 
+          `<span class="priority-badge">${task.priority}</span>` +
+          ` ${task.title}: ${task.description}`;
         if (task.completed) span.classList.add("completed");
 
         // Edit 버튼
