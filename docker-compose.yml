@@ -60,20 +60,23 @@ services:
       context: ./jmeter
       dockerfile: Dockerfile
     container_name: jmeter
+    # host 에 ./jmeter/report 폴더가 있으면 JMeter가 덮어쓰지 못할 수 있으니
+    # volumes 에서는 결과만 뽑아서 호스트로 가져오도록 합니다.
     volumes:
-      - ./jmeter:/jmeter
-    command:
-      - jmeter
-      - -n
-      - -t
-      - /jmeter/fastapi_test_plan.jmx
-      - -l
-      - /jmeter/results.jtl
-      - -JBASE_URL=http://fastapi-app:5001
-      - -Jjmeter.save.saveservice.output_format=csv
-      - -e
-      - -o
-      - /jmeter/report
+      - ./jmeter/results.jtl:/jmeter/results.jtl
+      - ./jmeter/report:/jmeter/report
+    depends_on:
+      - fastapi-app
+    command: >
+      sh -c "
+        rm -rf /jmeter/report &&
+        jmeter -n \
+          -t /jmeter/fastapi_test_plan.jmx \
+          -l /jmeter/results.jtl \
+          -JBASE_URL=http://fastapi-app:5001 \
+          -e -f \
+          -o /jmeter/report
+      "
     networks:
       - loadtest-net
 
