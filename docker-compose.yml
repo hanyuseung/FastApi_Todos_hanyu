@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
     container_name: FastApi-app
     ports:
-      - "7005:7005"
+      - "5001:5001"
 
   sonarqube:
     image: sonarqube:latest
