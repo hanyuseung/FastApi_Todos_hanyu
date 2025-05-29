@@ -81,7 +81,8 @@ h1 {
 }
 
 #todo-form input[type="text"],
-#todo-form input[type="number"] {
+#todo-form input[type="number"],
+#todo-form textarea {
   flex: 1 1 200px;
   padding: 10px;
   border: 2px solid #ddd;
@@ -89,7 +90,8 @@ h1 {
   transition: border-color 0.3s;
 }
 
-#todo-form input:focus {
+#todo-form input:focus,
+#todo-form textarea:focus {
   border-color: #777;
 }
 
@@ -215,10 +217,17 @@ body.dark-mode button {
 }
 
 /* ─── summary 이후에 위치한 상세 내용 숨김 ─── */
-.detail-content {
+.todo-details .detail{
   padding: 10px;
-  border-top: 1px solid #ddd;
-  margin-top: 5px;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  margin: 10px 0 0 26px;   /* summary 안의 checkbox 너비(≈26px)에 맞춰 들여쓰기 */
+  transition: border-color 0.3s;
+}
+
+/* 안에 포커스 가능한 요소가 있다면 포커스 시 강조 */
+.todo-details .detail:focus-within {
+  border-color: #777;
 }
 
 /* (원래 상세 내용은 <details>가 닫혀 있으면 자동으로 display:none) */
