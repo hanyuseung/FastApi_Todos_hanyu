@@ -191,43 +191,4 @@ body.dark-mode button {
   display: none;
 }
 
-/* ─── summary 영역을 flex로 정렬하고 커서 변경 ─── */
-.todo-details summary {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  padding: 10px;
-  background: var(--list-bg, #fff);
-  border-radius: 4px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
 
-/* ─── 커스텀 마커 표시 ─── */
-.todo-details summary::before {
-  content: "▶";
-  display: inline-block;
-  width: 1em;
-  margin-right: 0.5em;
-  transition: transform 0.2s ease;
-}
-
-/* ─── 열려 있을 때 화살표 회전 ─── */
-.todo-details[open] summary::before {
-  transform: rotate(90deg);
-}
-
-/* ─── summary 이후에 위치한 상세 내용 숨김 ─── */
-.todo-details .detail{
-  padding: 10px;
-  border: 2px solid #ddd;
-  border-radius: 4px;
-  margin: 10px 0 0 26px;   /* summary 안의 checkbox 너비(≈26px)에 맞춰 들여쓰기 */
-  transition: border-color 0.3s;
-}
-
-/* 안에 포커스 가능한 요소가 있다면 포커스 시 강조 */
-.todo-details .detail:focus-within {
-  border-color: #777;
-}
-
-/* (원래 상세 내용은 <details>가 닫혀 있으면 자동으로 display:none) */

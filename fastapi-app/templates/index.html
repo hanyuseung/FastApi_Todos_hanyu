@@ -45,7 +45,23 @@
       </div>
       <div class="week-container">
         <h2>Week</h2>
-        <ul id="week-list"></ul>
+        <ul id="week-list">
+          <li>
+            <details class="todo-details">
+              <summary>
+                <!-- 기존에 있던 체크박스와 제목, 배지 부분 -->
+                <input type="checkbox" checked style="margin-right:10px;" />
+                <span class="priority-badge">1</span> 할 일 제목
+              </summary>
+
+              <!-- 요약(summary) 외의 숨길 내용들 -->
+              <div class="detail">
+                <p>여기에 상세 설명이 들어갑니다.</p>
+                <button class="edit-btn">Edit</button>
+                <button class="del-btn">Delete</button>
+              </div>
+            </details>
+        </ul>
       </div>
     </div>
 
@@ -53,7 +69,7 @@
       <input type="text" id="title" placeholder="Title" required />
       <input type="text" id="description" placeholder="Description" required />
 
-      <textarea id="detail" placeholder="Details (optional)"></textarea>
+      <input type="text" id="detail" placeholder="Detail (선택)" />
 
       <!-- 우선순위 입력란 -->
       <input type="number" id="priority" placeholder="Priority (숫자)" required />
