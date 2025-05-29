@@ -1,14 +1,16 @@
-<!-- html version 9.0.0 -->
+<!-- html version 10.0.0 -->
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <script src = "https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>To-Do List</title>
   <link rel="stylesheet" href="/static/style.css">
 </head>
+
 <body>
 
   <div class="container">
@@ -22,7 +24,24 @@
     <div class="lists">
       <div class="today-container">
         <h2>Today</h2>
-        <ul id="today-list"></ul>
+        <ul id="today-list">
+          <li>
+            <details class="todo-details">
+              <summary>
+                <!-- 기존에 있던 체크박스와 제목, 배지 부분 -->
+                <input type="checkbox" checked style="margin-right:10px;" />
+                <span class="priority-badge">1</span> 할 일 제목
+              </summary>
+
+              <!-- 요약(summary) 외의 숨길 내용들 -->
+              <div class="detail">
+                <p>여기에 상세 설명이 들어갑니다.</p>
+                <button class="edit-btn">Edit</button>
+                <button class="del-btn">Delete</button>
+              </div>
+            </details>
+          </li>
+        </ul>
       </div>
       <div class="week-container">
         <h2>Week</h2>
@@ -33,6 +52,8 @@
     <form id="todo-form">
       <input type="text" id="title" placeholder="Title" required />
       <input type="text" id="description" placeholder="Description" required />
+
+      <textarea id="details" placeholder="Details (optional)"></textarea>
 
       <!-- 우선순위 입력란 -->
       <input type="number" id="priority" placeholder="Priority (숫자)" required />
@@ -57,15 +78,16 @@
       todos.forEach(t => {
         if (t.todayFlag === undefined) t.todayFlag = false;
         if (t.priority === undefined) t.priority = 0;
+        if (t.detail === undefined) t.detail = "";
       });
 
       // Today/Week로 분리 후 우선순위 오름차순 정렬
-      const todayTasks = todos.filter(t => t.todayFlag).sort((a,b)=>a.priority-b.priority);
-      const weekTasks  = todos.filter(t => !t.todayFlag).sort((a,b)=>a.priority-b.priority);
+      const todayTasks = todos.filter(t => t.todayFlag).sort((a, b) => a.priority - b.priority);
+      const weekTasks = todos.filter(t => !t.todayFlag).sort((a, b) => a.priority - b.priority);
 
       // 렌더링
       renderList(document.getElementById("today-list"), todayTasks);
-      renderList(document.getElementById("week-list"),  weekTasks);
+      renderList(document.getElementById("week-list"), weekTasks);
     }
 
     // 공통 렌더 함수
@@ -82,7 +104,7 @@
         cb.addEventListener("change", async () => {
           await fetch(`/todos/${task.id}/completed`, {
             method: "PATCH",
-            headers: {"Content-Type":"application/json"},
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ completed: cb.checked })
           });
           li.querySelector("span").classList.toggle("completed", cb.checked);
@@ -91,20 +113,29 @@
         // priority 뱃지
         const span = document.createElement("span");
         //span.textContent = `[${task.priority}] ${task.title}: ${task.description}`;
-        span.innerHTML = 
+        span.innerHTML =
           `<span class="priority-badge">${task.priority}</span>` +
           ` ${task.title}: ${task.description}`;
         if (task.completed) span.classList.add("completed");
+
+
+        // 상세 설명
+        if(task.detail) {
+          const details = document.createElement("p");
+          details.textContent = task.detail;
+          details.style.margin = "8px 0 0 26px";
+          li.appendChild(details);
+        }
 
         // Edit 버튼
         const editBtn = document.createElement("button");
         editBtn.textContent = "Edit";
         editBtn.addEventListener("click", async () => {
           const newTitle = prompt("New title", task.title);
-          const newDesc  = prompt("New description", task.description);
-          const newPrio  = prompt("New priority", task.priority);
-          const newFlag  = confirm("오늘 목록에 포함할까요? (OK = Today, Cancel = Week)");
-          if (newTitle!=null && newDesc!=null && newPrio!=null) {
+          const newDesc = prompt("New description", task.description);
+          const newPrio = prompt("New priority", task.priority);
+          const newFlag = confirm("오늘 목록에 포함할까요? (OK = Today, Cancel = Week)");
+          if (newTitle != null && newDesc != null && newPrio != null) {
             const updated = {
               id: task.id,
               title: newTitle,
@@ -115,7 +146,7 @@
             };
             const r = await fetch(`/todos/${task.id}`, {
               method: "PUT",
-              headers: {"Content-Type":"application/json"},
+              headers: { "Content-Type": "application/json" },
               body: JSON.stringify(updated)
             });
             if (r.ok) fetchTodos();
@@ -141,16 +172,17 @@
     // 폼 제출 핸들러
     document.getElementById("todo-form").addEventListener("submit", async e => {
       e.preventDefault();
-      const id          = Date.now();
-      const title       = document.getElementById("title").value;
+      const id = Date.now();
+      const title = document.getElementById("title").value;
       const description = document.getElementById("description").value;
-      const priority    = parseInt(document.getElementById("priority").value);
-      const todayFlag   = document.getElementById("todayFlag").checked;
+      const detail = document.getElementById("detail").value;
+      const priority = parseInt(document.getElementById("priority").value);
+      const todayFlag = document.getElementById("todayFlag").checked;
 
-      const newTodo = { id, title, description, completed: false, priority, todayFlag };
+      const newTodo = { id, title, description, detail, completed: false, priority, todayFlag };
       const r = await fetch("/todos", {
         method: "POST",
-        headers: {"Content-Type":"application/json"},
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newTodo)
       });
       if (r.ok) {
@@ -161,10 +193,11 @@
 
     // 다크 모드 토글
     document.getElementById("toggle-dark-mode")
-      .addEventListener("click", ()=> document.body.classList.toggle("dark-mode"));
+      .addEventListener("click", () => document.body.classList.toggle("dark-mode"));
 
     // 초기 로드
     fetchTodos();
   </script>
 </body>
+
 </html>

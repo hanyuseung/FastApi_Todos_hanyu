@@ -1,4 +1,4 @@
-# main.py version 9.0.0
+# main.py version 10.0.0
 
 import os, json
 from fastapi import FastAPI, HTTPException
@@ -23,6 +23,7 @@ class TodoItem(BaseModel):
     id: int
     title: str
     description: str
+    detail: str = ""
     completed: bool
     priority: int
     todayFlag: bool = False    # 새로 추가된 필드, 기본값 False
@@ -43,6 +44,8 @@ def load_todos():
     for todo in todos:
         if "todayFlag" not in todo:
             todo["todayFlag"] = False
+        if "detail" not in todo:
+            todo["detail"] = ""
     return todos
 
 def save_todos(todos):

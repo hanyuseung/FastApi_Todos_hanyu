@@ -1,4 +1,4 @@
-/* CSS Version 2.0.0 */
+/* CSS Version 10.0.0 */
 
 /* list container */
 /* ─── 리스트 래퍼 ─── */
@@ -183,3 +183,42 @@ body.dark-mode button {
   margin-right: 0.5em;
   font-size: 0.9em;
 }
+
+/* ─── 디폴트 마커(▶) 숨기기 ─── */
+.todo-details summary::-webkit-details-marker {
+  display: none;
+}
+
+/* ─── summary 영역을 flex로 정렬하고 커서 변경 ─── */
+.todo-details summary {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 10px;
+  background: var(--list-bg, #fff);
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* ─── 커스텀 마커 표시 ─── */
+.todo-details summary::before {
+  content: "▶";
+  display: inline-block;
+  width: 1em;
+  margin-right: 0.5em;
+  transition: transform 0.2s ease;
+}
+
+/* ─── 열려 있을 때 화살표 회전 ─── */
+.todo-details[open] summary::before {
+  transform: rotate(90deg);
+}
+
+/* ─── summary 이후에 위치한 상세 내용 숨김 ─── */
+.detail-content {
+  padding: 10px;
+  border-top: 1px solid #ddd;
+  margin-top: 5px;
+}
+
+/* (원래 상세 내용은 <details>가 닫혀 있으면 자동으로 display:none) */
