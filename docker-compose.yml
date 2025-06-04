@@ -5,7 +5,7 @@ services:
     build:
       context: ./fastapi-app
       dockerfile: Dockerfile
-    container_name: FastApi-app
+    container_name: fastapi-app
     ports:
       - "5001:5001"
     depends_on:
@@ -99,7 +99,7 @@ services:
       - "3100:3100"
     networks:
       - loadtest-net
-      
+
 networks:
   loadtest-net:
     driver: bridge
