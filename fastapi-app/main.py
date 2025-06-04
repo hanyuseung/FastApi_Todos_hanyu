@@ -33,6 +33,7 @@ custom_logger.setLevel(logging.INFO)
 # Add Loki handler (assuming `loki_logs_handler` is correctly configured)
 custom_logger.addHandler(loki_logs_handler)
 
+@app.middleware("http")
 async def log_requests(request: Request, call_next):
     start_time = time.time()
     response = await call_next(request)
@@ -48,7 +49,7 @@ async def log_requests(request: Request, call_next):
 
     return response
 
-app.middleware("http", log_requests)
+
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 static_path = os.path.join(current_dir, "static")
