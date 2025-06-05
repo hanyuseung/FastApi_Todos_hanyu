@@ -112,78 +112,101 @@
       tasks.forEach(task => {
         const li = document.createElement("li");
 
-        // checkbox
-        const cb = document.createElement("input");
-        cb.type = "checkbox";
-        cb.checked = task.completed;
-        cb.style.marginRight = "10px";
-        cb.addEventListener("change", async () => {
-          await fetch(`/todos/${task.id}/completed`, {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ completed: cb.checked })
-          });
-          li.querySelector("span").classList.toggle("completed", cb.checked);
+      // 1) <details> 생성
+      const details = document.createElement("details");
+      details.className = "todo-details";
+
+      // 2) <summary> 생성 후, 그 안에 체크박스 + 우선순위 뱃지 + 제목/설명 추가
+      const summary = document.createElement("summary");
+
+      // 2-1) 체크박스
+      const cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.checked = task.completed;
+      cb.style.marginRight = "10px";
+      cb.addEventListener("change", async () => {
+        await fetch(`/todos/${task.id}/completed`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ completed: cb.checked })
         });
-
-        // priority 뱃지
-        const span = document.createElement("span");
-        //span.textContent = `[${task.priority}] ${task.title}: ${task.description}`;
-        span.innerHTML =
-          `<span class="priority-badge">${task.priority}</span>` +
-          ` ${task.title}: ${task.description}`;
-        if (task.completed) span.classList.add("completed");
-
-
-        // 상세 설명
-        if(task.detail) {
-          const details = document.createElement("p");
-          details.textContent = task.detail;
-          details.style.margin = "8px 0 0 26px";
-          li.appendChild(details);
-        }
-
-        // Edit 버튼
-        const editBtn = document.createElement("button");
-        editBtn.textContent = "Edit";
-        editBtn.addEventListener("click", async () => {
-          const newTitle = prompt("New title", task.title);
-          const newDesc = prompt("New description", task.description);
-          const newPrio = prompt("New priority", task.priority);
-          const newFlag = confirm("오늘 목록에 포함할까요? (OK = Today, Cancel = Week)");
-          if (newTitle != null && newDesc != null && newPrio != null) {
-            const updated = {
-              id: task.id,
-              title: newTitle,
-              description: newDesc,
-              completed: task.completed,
-              priority: parseInt(newPrio),
-              todayFlag: newFlag
-            };
-            const r = await fetch(`/todos/${task.id}`, {
-              method: "PUT",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(updated)
-            });
-            if (r.ok) fetchTodos();
-            else alert("Failed to update");
-          }
-        });
-
-        // Delete 버튼
-        const delBtn = document.createElement("button");
-        delBtn.textContent = "Delete";
-        delBtn.addEventListener("click", async () => {
-          if (!confirm("삭제하시겠습니까?")) return;
-          const r = await fetch(`/todos/${task.id}`, { method: "DELETE" });
-          if (r.ok) fetchTodos();
-          else alert("Failed to delete");
-        });
-
-        li.append(cb, span, editBtn, delBtn);
-        container.appendChild(li);
+        // 완료 상태에 따라 텍스트에 스타일 토글
+        span.classList.toggle("completed", cb.checked);
       });
-    }
+
+      // 2-2) 우선순위 뱃지 + 제목/설명
+      const span = document.createElement("span");
+      span.innerHTML =
+        `<span class="priority-badge">${task.priority}</span>` +
+        ` ${task.title}: ${task.description}`;
+      if (task.completed) {
+        span.classList.add("completed");
+      }
+
+      // 2-3) summary에 체크박스와 span 추가
+      summary.append(cb, span);
+
+      // 3) <details> 안쪽(요약 아래)에 들어갈 영역 생성
+      const detailContainer = document.createElement("div");
+      detailContainer.className = "detail";
+
+      // 3-1) 상세 설명(task.detail)이 있을 때만 <p>로 추가
+      if (task.detail) {
+        const detailText = document.createElement("p");
+        detailText.textContent = task.detail;
+        detailContainer.appendChild(detailText);
+      }
+
+      // 3-2) Edit 버튼
+      const editBtn = document.createElement("button");
+      editBtn.type = "button"; // 폼이 제출되지 않도록 반드시 type="button" 지정
+      editBtn.textContent = "Edit";
+      editBtn.addEventListener("click", async () => {
+        const newTitle = prompt("New title", task.title);
+        const newDesc = prompt("New description", task.description);
+        const newPrio = prompt("New priority", task.priority);
+        const newFlag = confirm("오늘 목록에 포함할까요? (OK = Today, Cancel = Week)");
+        if (newTitle != null && newDesc != null && newPrio != null) {
+          const updated = {
+            id: task.id,
+            title: newTitle,
+            description: newDesc,
+            completed: task.completed,
+            priority: parseInt(newPrio),
+            todayFlag: newFlag
+          };
+          const r = await fetch(`/todos/${task.id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(updated)
+          });
+          if (r.ok) fetchTodos();
+          else alert("Failed to update");
+        }
+      });
+
+      // 3-3) Delete 버튼
+      const delBtn = document.createElement("button");
+      delBtn.type = "button"; // 폼이 제출되지 않도록 반드시 type="button" 지정
+      delBtn.textContent = "Delete";
+      delBtn.addEventListener("click", async () => {
+        if (!confirm("삭제하시겠습니까?")) return;
+        const r = await fetch(`/todos/${task.id}`, { method: "DELETE" });
+        if (r.ok) fetchTodos();
+        else alert("Failed to delete");
+      });
+
+      // 3-4) detailContainer 안에 Edit/Delete 버튼 추가
+      detailContainer.append(editBtn, delBtn);
+
+      // 4) <details>에 summary와 detailContainer를 순서대로 붙임
+      details.append(summary, detailContainer);
+
+      // 5) li에 완성된 <details> 붙이기
+      li.appendChild(details);
+      container.appendChild(li);
+    });
+  }
 
     // 폼 제출 핸들러
     document.getElementById("todo-form").addEventListener("submit", async e => {

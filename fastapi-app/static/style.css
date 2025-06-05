@@ -1,36 +1,6 @@
-/* CSS Version 10.0.0 */
+/* CSS Version 10.0.1 (Updated for <details> 구조) */
 
-/* list container */
-/* ─── 리스트 래퍼 ─── */
-.lists {
-  display: flex;           /* 가로 정렬 */
-  flex-wrap: nowrap;       /* 아이템이 줄바꿈 하지 않도록 */
-  width: 100%;             /* 부모(컨테이너)만큼 넓이 차지 */
-  gap: 20px;               /* 칸 사이 간격 (선택) */
-
-}
-
-/* ─── 각각 50%씩 차지 ─── */
-.today-container,
-.week-container {
-  flex: 1 1 0;             /* 동일 비율로 나눠 갖기 */
-  min-width: 0;            /* 넘칠 때 잘려 보이게 */
-  /* border-right: 1px solid #ccc;  필요하면 추가 */
-}
-
-/* Today 리스트 폰트 굵게 설정 */
-.today-container #today-list li span {
-  font-weight: bold;
-}
-
-/* ─── 컨테이너 최대 너비 조정 ─── */
-.container {
-  max-width: none;         /* 600px 제한 제거 */
-  width: 90vw;             /* 화면 너비의 90% 차지 (필요에 맞춰 변경) */
-  margin: 0 auto;
-}
-
-/* 기본 리셋 및 폰트 설정 */
+/* 기본 리셋 및 박스 모델 설정 */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -43,9 +13,32 @@ body {
   padding: 20px;
 }
 
-body.dark-mode.container {
+/* 다크 모드 전체 배경/텍스트 색상 */
+body.dark-mode {
   background-color: #2c3e50;
   color: #ecf0f1;
+}
+
+/* 리스트 래퍼: 가로로 Today/Week 영역 배치 */
+.lists {
+  display: flex;
+  flex-wrap: nowrap;
+  width: 100%;
+  gap: 20px;
+}
+
+/* Today/Week 컨테이너: 동일 비율로 50%씩 차지 */
+.today-container,
+.week-container {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/* 컨테이너 최대 너비 조정 */
+.container {
+  max-width: none;
+  width: 90vw;
+  margin: 0 auto;
 }
 
 /* 헤딩 스타일 */
@@ -66,7 +59,6 @@ h1 {
   cursor: pointer;
   transition: background-color 0.3s;
 }
-
 #toggle-dark-mode:hover {
   background-color: #333;
 }
@@ -79,7 +71,6 @@ h1 {
   justify-content: center;
   margin-bottom: 20px;
 }
-
 #todo-form input[type="text"],
 #todo-form input[type="number"],
 #todo-form textarea {
@@ -89,12 +80,10 @@ h1 {
   border-radius: 4px;
   transition: border-color 0.3s;
 }
-
 #todo-form input:focus,
 #todo-form textarea:focus {
   border-color: #777;
 }
-
 #todo-form button {
   padding: 10px 20px;
   background-color: #333;
@@ -104,77 +93,117 @@ h1 {
   cursor: pointer;
   transition: background-color 0.3s;
 }
-
 #todo-form button:hover {
   background-color: #555;
 }
 
-/* To-Do 리스트 스타일링 (Today/Week 리스트에 적용) */
+/* 리스트 자체 스타일: 불릿 제거 */
 #today-list,
 #week-list {
   list-style: none;
 }
 
+/* ─── <li> 자체 간격 인어주기 ─── */
 #today-list li,
 #week-list li {
-  background-color: #fff;
-  padding: 15px;
   margin-bottom: 10px;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-#today-list li span,
-#week-list li span {
+/* ─── <details> 컨테이너 스타일 ─── */
+.todo-details {
+  background-color: #fff;
+  padding: 15px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s;
+}
+
+/* 다크 모드일 때 <details> 색상 변경 */
+body.dark-mode .todo-details {
+  background-color: #34495e;
+}
+
+/* ─── <summary> 영역 스타일 ─── */
+.todo-details summary {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  list-style: none; /* 기본 ▶ 모양 제거 */
+}
+
+/* ─── 디폴트 마커(▶) 숨기기 ─── */
+.todo-details summary::-webkit-details-marker {
+  display: none;
+}
+.todo-details summary::marker {
+  display: none;
+}
+
+/* summary의 체크박스 */
+.todo-details summary input[type="checkbox"] {
+  margin-right: 10px;
+  width: 1.2em;
+  height: 1.2em;
+  cursor: pointer;
+}
+
+/* summary의 텍스트(우선순위 + 제목/설명) */
+.todo-details summary span {
   flex: 1;
   margin-left: 10px;
 }
 
-#today-list li button,
-#week-list li button {
-  margin-left: 10px;
-  padding: 5px 10px;
+/* Today 리스트 내 항목 제목만 굵게 */
+.today-container #today-list li summary span {
+  font-weight: bold;
+}
+
+/* 완료된 항목 스타일 (summary 내 텍스트) */
+.todo-details summary .completed {
+  text-decoration: line-through;
+  color: #999;
+}
+
+/* ─── 상세(detail) 영역 ─── */
+.todo-details .detail {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #ddd;
+}
+
+/* 다크 모드일 때 detail 구분선 색상 */
+body.dark-mode .todo-details .detail {
+  border-top-color: #555;
+}
+
+/* 상세 설명 텍스트 */
+.todo-details .detail p {
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+
+/* ─── Edit/Delete 버튼 ─── */
+.todo-details .detail button {
+  margin-right: 10px;
+  padding: 6px 12px;
   background-color: #e74c3c;
   border: none;
   border-radius: 4px;
   color: #fff;
   cursor: pointer;
   transition: background-color 0.3s;
+  font-size: 0.9em;
 }
-
-#today-list li button:hover,
-#week-list li button:hover {
+.todo-details .detail button:hover {
   background-color: #c0392b;
 }
 
-/* 완료된 항목 스타일 */
-.completed {
-  text-decoration: line-through;
-  color: #999;
+/* 버튼이 두 개 있을 때 일정 간격 유지 */
+.todo-details .detail button:last-child {
+  margin-right: 0;
 }
 
-/* 다크 모드 스타일 */
-body.dark-mode {
-  background-color: #2c3e50;
-  color: #ecf0f1;
-}
-
-body.dark-mode #today-list li,
-body.dark-mode #week-list li {
-  background-color: #34495e;
-}
-
-body.dark-mode input,
-body.dark-mode button {
-  background-color: #555;
-  border: 2px solid #777;
-  color: #ecf0f1;
-}
-
-
-/* 우선순위 번호를 배지처럼 꾸미기 */
+/* ─── 우선순위 번호를 배지처럼 꾸미기 ─── */
 .priority-badge {
   display: inline-block;
   background: #f0f0f0;
@@ -186,9 +215,10 @@ body.dark-mode button {
   font-size: 0.9em;
 }
 
-/* ─── 디폴트 마커(▶) 숨기기 ─── */
-.todo-details summary::-webkit-details-marker {
-  display: none;
+/* 다크 모드일 때 input과 button 색상 조정 */
+body.dark-mode input,
+body.dark-mode button {
+  background-color: #555;
+  border: 2px solid #777;
+  color: #ecf0f1;
 }
-
-
